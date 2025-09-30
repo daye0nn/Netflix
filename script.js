@@ -1,4 +1,4 @@
-import { API_KEY } from "./env.js";
+// import { API_KEY } from "./env.js";
 
 // Document Items
 const nowplayingUL = document.querySelector(".nowplaying ul");
@@ -6,7 +6,7 @@ const upcomingUL = document.querySelector(".upcoming ul");
 const topratedUL = document.querySelector(".toprated ul");
 
 // Common URL
-const tmdbCommand = "https://api.themoviedb.org/3";
+// const tmdbCommand = "https://api.themoviedb.org/3";
 
 // Create Element
 const createElement = (movie, index, category) => {
@@ -65,50 +65,49 @@ const createElement = (movie, index, category) => {
 
 // NowPlaying DB
 const nowPlaying = async () => {
-  const url = `${tmdbCommand}/movie/now_playing?api_key=${API_KEY}&language=ko-KR&page=1`;
-  const response = await fetch(url);
-  const { results } = await response.json();
-  return results;
+  const response = await fetch("/.netlify/functions/tmdb-nowplaying");
+  const data = await response.json();
+  return data.results;
 };
 
 // UpComing DB
 const upComing = async () => {
-  const url = `${tmdbCommand}/movie/upcoming?api_key=${API_KEY}&language=ko-KR&page=1`;
-  const response = await fetch(url);
-  const { results } = await response.json();
-  return results;
+  const response = await fetch("/.netlify/functions/tmdb-upcoming");
+  const data = await response.json();
+  return data.results;
 };
 
 // TopRated DB
 const topRated = async () => {
-  const url = `${tmdbCommand}/movie/top_rated?api_key=${API_KEY}&language=ko-KR&page=1`;
-  const response = await fetch(url);
-  const { results } = await response.json();
-  return results;
+  const response = await fetch("/.netlify/functions/tmdb-toprated");
+  const data = await response.json();
+  return data.results;
 };
 
 // Generes DB
 const movieGeneres = async () => {
-  const url = `${tmdbCommand}/genre/movie/list?api_key=${API_KEY}&language=ko-KR`;
-  const response = await fetch(url);
-  const { genres } = await response.json();
-  return genres;
+  const response = await fetch("/.netlify/functions/tmdb-genres");
+  const data = await response.json();
+  return data.genres;
 };
 
 // youtube DB
 const youtubeTrailers = async (movieId) => {
-  const url = `${tmdbCommand}/movie/${movieId}/videos?api_key=${API_KEY}&language=ko-KR`;
-  const response = await fetch(url);
-  const { results: trailers } = await response.json();
-  console.log(trailers);
-  return trailers;
+  const response = await fetch(
+    `/.netlify/functions/tmdb-videos?movieId=${movieId}`
+  );
+  const data = await response.json();
+  return data.results;
 };
 
 // Promise DBs
 const getMovies = async () => {
   const [nowPlayingMovie, upComingMovie, topRatedMovie, generes] =
     await Promise.all([nowPlaying(), upComing(), topRated(), movieGeneres()]);
-
+  console.log("Nowplaying", nowPlayingMovie);
+  console.log("upcoming", upComingMovie);
+  console.log("toprated", topRatedMovie);
+  console.log("generes", generes);
   // Movie Items
   nowPlayingMovie.forEach((movie, index) => {
     createElement(movie, index, "nowplaying");
